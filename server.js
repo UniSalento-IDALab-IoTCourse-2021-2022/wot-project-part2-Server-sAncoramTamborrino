@@ -2,6 +2,17 @@ const express = require("express");
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
 const uri = 'mongodb://localhost/TemperatureDB';
+const WebSocket =  require('ws');
+const path = require('path');
+
+const wss = new WebSocket.Server({ port: 3001 });
+
+wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(message) {
+        console.log('received: %s', message);
+    });
+    ws.send('something');
+});
 
 app.listen(3000, () => {
     console.log("Server running on port 3000");
@@ -25,11 +36,10 @@ app.post("/temperature", (req, res, next) => {
     var oxygensat = req.body.oxygensat;
     var timestamp = req.body.timestamp;
 
+    let values = [temperature, heartrate, resprate, oxygensat, timestamp]
 
-
-    const client = new MongoClient(uri, {useUnifiedTopology: true});
-    async function run() {
-
+    async function pushInDb() {
+        const client = new MongoClient(uri, {useUnifiedTopology: true});
         try {
 
             await client.connect();
@@ -52,12 +62,20 @@ app.post("/temperature", (req, res, next) => {
         }
     }
 
-    run().catch(console.dir);
+    pushInDb().catch(console.dir);
+    async function pushToClient(){
+        wss.clients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(temperature);
+            }
+        });
+    }
+    pushToClient().catch(console.dir);
     res.sendStatus(200)
 });
 
 app.get('/dashboard', async (req, res) => {
-    const client = new MongoClient(uri);
+    /*const client = new MongoClient(uri);
     async function run() {
         try {
             const database = client.db("TemperatureDB");
@@ -102,5 +120,6 @@ app.get('/dashboard', async (req, res) => {
     //console.log('Timestamps: '+finalvalues[4])
     //let time = Date.parse(finalvalues[4][0]);
     //console.log(new Date(time).toUTCString())
-    res.send('Hello World! The last temperature is: '+finalvalues[0]);
+    res.send('Hello World! The last temperature is: '+finalvalues[0]);*/
+    res.sendFile(path.join(__dirname + '/index.html'));
     })
