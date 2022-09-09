@@ -11,11 +11,13 @@
         socketExample.send("Text to be sent to the server!");
       };
       socketExample.onmessage = function (event) {
-        console.log(event.data);
-        document.getElementById("demo").innerHTML = event.data;
+        var values = event.data.split(',')
+        console.log(values);
+        document.getElementById("demo").innerHTML = values[1];
       }
     }
   </script>
+
 </head>
 <body onload="startup();">
 <div id="demo">
