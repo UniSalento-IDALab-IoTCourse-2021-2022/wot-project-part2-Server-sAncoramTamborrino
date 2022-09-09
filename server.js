@@ -4,6 +4,7 @@ const MongoClient = require('mongodb').MongoClient;
 const uri = 'mongodb://localhost/TemperatureDB';
 const WebSocket =  require('ws');
 const path = require('path');
+const { exec } = require("child_process");
 
 const wss = new WebSocket.Server({ port: 3001 });
 
@@ -27,6 +28,19 @@ app.use(
 )
 
 app.use(express.json());
+
+exec("scp -r text.txt pi@192.168.1.36:~", (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+});
+
 app.post("/temperature", (req, res, next) => {
     console.log('Achieved '+req.body.temperature+'°C of body temperature.');
     var sensor = req.body.sensor;
@@ -63,15 +77,22 @@ app.post("/temperature", (req, res, next) => {
     }
 
     pushInDb().catch(console.dir);
+
     async function pushToClient(){
         wss.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(temperature);
+                console.log(values)
+                client.send(values.toString());
             }
         });
     }
     pushToClient().catch(console.dir);
     res.sendStatus(200)
+});
+
+app.get('/download', function(req, res){
+    const file = `${__dirname}/model/iot_model.joblib`;
+    res.download(file); // Set disposition and send it.
 });
 
 app.get('/dashboard', async (req, res) => {
