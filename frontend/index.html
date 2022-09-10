@@ -189,9 +189,6 @@
         function startup() {
 
             var socketExample = new WebSocket("ws://localhost:3001");
-            socketExample.onopen = function (event) {
-                socketExample.send("Text to be sent to the server!");
-            };
             socketExample.onmessage = function (event) {
                 var values = event.data.split(',')
                 console.log(values);
