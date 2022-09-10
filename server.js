@@ -1,25 +1,19 @@
 const express = require("express");
-const app = express();
+const path = require("path");
 const MongoClient = require('mongodb').MongoClient;
 const uri = 'mongodb://localhost/TemperatureDB';
 const WebSocket =  require('ws');
-const path = require('path');
-const { exec } = require("child_process");
+
+const app = express();
 
 const wss = new WebSocket.Server({ port: 3001 });
 
-wss.on('connection', function connection(ws) {
+/*wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
     });
     ws.send('something');
-});
-
-app.listen(3000, () => {
-    console.log("Server running on port 3000");
-});
-
-
+});*/
 
 app.use(
     express.urlencoded({
@@ -28,19 +22,6 @@ app.use(
 )
 
 app.use(express.json());
-
-exec("scp -r text.txt pi@192.168.1.36:~", (error, stdout, stderr) => {
-    if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-    }
-    console.log(`stdout: ${stdout}`);
-});
-
 app.post("/temperature", (req, res, next) => {
     console.log('Achieved '+req.body.temperature+'°C of body temperature.');
     var sensor = req.body.sensor;
@@ -51,6 +32,7 @@ app.post("/temperature", (req, res, next) => {
     var timestamp = req.body.timestamp;
 
     let values = [temperature, heartrate, resprate, oxygensat, timestamp]
+    console.log(values)
 
     async function pushInDb() {
         const client = new MongoClient(uri, {useUnifiedTopology: true});
@@ -77,11 +59,9 @@ app.post("/temperature", (req, res, next) => {
     }
 
     pushInDb().catch(console.dir);
-
     async function pushToClient(){
         wss.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
-                console.log(values)
                 client.send(values.toString());
             }
         });
@@ -91,56 +71,14 @@ app.post("/temperature", (req, res, next) => {
 });
 
 app.get('/download', function(req, res){
-    const file = `${__dirname}/model/iot_model.joblib`;
+    const file = `${__dirname}/iot_model.joblib`;
     res.download(file); // Set disposition and send it.
 });
 
-app.get('/dashboard', async (req, res) => {
-    /*const client = new MongoClient(uri);
-    async function run() {
-        try {
-            const database = client.db("TemperatureDB");
-            const temp = database.collection("temperature");
-            const cursor = temp.find();
+app.use("/static", express.static(path.resolve(__dirname, "frontend", "static")));
 
-            if ((await temp.estimatedDocumentCount()) === 0) {
-                console.log("No documents found!");
-            }
+app.get("/*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend","index.html"));
+})
 
-            let found = await cursor.toArray()
-            let tempvalues = []
-            let hrvalues = []
-            let respvalues = []
-            let oxyvalues = []
-            let timevalues = []
-            for(let i =0; i < await temp.estimatedDocumentCount(); i++){
-                tempvalues.push(found[i].body_temperature)
-                hrvalues.push(found[i].heart_rate)
-                respvalues.push(found[i].respiration_rate)
-                oxyvalues.push(found[i].oxygen_saturation)
-                timevalues.push(found[i].timestamp)
-            }
-
-            let values = [tempvalues, hrvalues, respvalues, oxyvalues, timevalues]
-            try {
-                return values;
-            }
-            catch (e)
-            {
-                return -1;
-            }
-        } finally {
-            await client.close();
-        }
-    }
-    var finalvalues = await run().catch(console.dir);
-    console.log('Body temperatures: '+finalvalues[0])
-    console.log('Heart rates: '+finalvalues[1])
-    console.log('Respiration rates: '+finalvalues[2])
-    console.log('Oxygen saturations: '+finalvalues[3])
-    //console.log('Timestamps: '+finalvalues[4])
-    //let time = Date.parse(finalvalues[4][0]);
-    //console.log(new Date(time).toUTCString())
-    res.send('Hello World! The last temperature is: '+finalvalues[0]);*/
-    res.sendFile(path.join(__dirname + '/index.html'));
-    })
+app.listen(process.env.PORT || 3000, () => console.log("Server woke up"));
