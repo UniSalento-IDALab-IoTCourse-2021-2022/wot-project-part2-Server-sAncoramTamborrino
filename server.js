@@ -5,7 +5,6 @@ const uri = 'mongodb://localhost/TemperatureDB';
 const WebSocket =  require('ws');
 
 const app = express();
-
 const wss = new WebSocket.Server({ port: 3001 });
 
 /*wss.on('connection', function connection(ws) {

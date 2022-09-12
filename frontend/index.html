@@ -44,11 +44,11 @@
 
         function updateAllCharts(values) {
             // Chart 1
-            addData(chart1,values[4],values[0]);
+            addData(chart1,values[4],values[1]);
             removeData(chart1);
 
             // Chart 2
-            addData(chart2,values[4],values[1]);
+            addData(chart2,values[4],values[0]);
             removeData(chart2);
 
             // Chart 3
@@ -191,7 +191,6 @@
             var socketExample = new WebSocket("ws://localhost:3001");
             socketExample.onmessage = function (event) {
                 var values = event.data.split(',')
-                console.log(values);
                 updateAllCharts(values)
             }
         }
