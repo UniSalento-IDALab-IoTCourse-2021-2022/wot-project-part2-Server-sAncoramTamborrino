@@ -7,12 +7,10 @@ const WebSocket =  require('ws');
 const app = express();
 const wss = new WebSocket.Server({ port: 3001 });
 
-/*wss.on('connection', function connection(ws) {
+wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
-        console.log('received: %s', message);
     });
-    ws.send('something');
-});*/
+});
 
 app.use(
     express.urlencoded({
@@ -22,7 +20,6 @@ app.use(
 
 app.use(express.json());
 app.post("/temperature", (req, res, next) => {
-    console.log('Achieved '+req.body.temperature+'°C of body temperature.');
     var sensor = req.body.sensor;
     var temperature = req.body.temperature;
     var heartrate = req.body.heartrate;
@@ -30,8 +27,11 @@ app.post("/temperature", (req, res, next) => {
     var oxygensat = req.body.oxygensat;
     var timestamp = req.body.timestamp;
 
+    if(temperature==null && heartrate==null && resprate==null && oxygensat==null){
+        console.log('A problem occurred achieving data from sensors.')
+    }
+
     let values = [temperature, heartrate, resprate, oxygensat, timestamp]
-    console.log(values)
 
     async function pushInDb() {
         const client = new MongoClient(uri, {useUnifiedTopology: true});
