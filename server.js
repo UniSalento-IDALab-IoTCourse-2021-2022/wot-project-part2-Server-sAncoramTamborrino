@@ -5,12 +5,8 @@ const uri = 'mongodb://localhost/TemperatureDB';
 const WebSocket =  require('ws');
 
 const app = express();
-const wss = new WebSocket.Server({ port: 3001 });
 
-wss.on('connection', function connection(ws) {
-    ws.on('message', function incoming(message) {
-    });
-});
+const wss = new WebSocket.Server({ port: 3001 });
 
 app.use(
     express.urlencoded({
@@ -20,16 +16,13 @@ app.use(
 
 app.use(express.json());
 app.post("/temperature", (req, res, next) => {
+    console.log('Achieved '+req.body.temperature+'°C of body temperature.');
     var sensor = req.body.sensor;
     var temperature = req.body.temperature;
     var heartrate = req.body.heartrate;
     var resprate = req.body.resprate;
     var oxygensat = req.body.oxygensat;
     var timestamp = req.body.timestamp;
-
-    if(temperature==null && heartrate==null && resprate==null && oxygensat==null){
-        console.log('A problem occurred achieving data from sensors.')
-    }
 
     let values = [temperature, heartrate, resprate, oxygensat, timestamp]
 
@@ -68,7 +61,6 @@ app.post("/temperature", (req, res, next) => {
     pushToClient().catch(console.dir);
     res.sendStatus(200)
 });
-
 app.get('/download', function(req, res){
     const file = `${__dirname}/iot_model.joblib`;
     res.download(file); // Set disposition and send it.

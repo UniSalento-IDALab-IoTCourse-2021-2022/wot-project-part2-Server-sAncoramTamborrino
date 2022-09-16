@@ -1,4 +1,21 @@
 const http = require('http')
+const {spawn} = require('child_process');
+
+function model(hr, respbpm, spo2, bodytemp) {
+    let outcome
+    // Launch a script with Python as interpreter, and send to output what it prints
+    const python = spawn('python', ['../../../script.py', hr, respbpm, spo2, bodytemp]);
+    python.stdout.on("data", function (data) {
+        console.log("data from script");
+        outcome = data.toString()
+        console.log(outcome)
+    })
+
+    // Return exit code of the script
+    python.on("close", (code) => {
+        console.log(`child process closed stdio with code ${code}`)
+    })
+}
 
 //We use this function to round the generated values using a given precision
 function roundWithMaxPrecision (n, precision) {
@@ -52,6 +69,8 @@ setInterval(function() {
     console.log('Heart rate: '+hr+' BPM');
     console.log('Respiratory rate: '+respbpm+' BPM')
     console.log('Oxygen saturation: '+spo2+'%');
+    // Send data to model
+    model(hr, respbpm, spo2, bodytemp)
     //console.log(date);
 
     const data = JSON.stringify({

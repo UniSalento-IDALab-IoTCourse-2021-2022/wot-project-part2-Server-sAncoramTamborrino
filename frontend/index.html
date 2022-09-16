@@ -187,7 +187,6 @@
     </script>
     <script>
         function startup() {
-
             var socketExample = new WebSocket("ws://localhost:3001");
             socketExample.onmessage = function (event) {
                 var values = event.data.split(',')
