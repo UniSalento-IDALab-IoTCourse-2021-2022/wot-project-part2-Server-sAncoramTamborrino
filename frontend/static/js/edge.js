@@ -1,5 +1,26 @@
 const http = require('http')
 const {spawn} = require('child_process');
+var fs = require('fs');
+
+function download(url, dest, cb) {
+    var file = fs.createWriteStream(dest);
+    http.get(url, function(response) {
+        response.pipe(file);
+        file.on('finish', function() {
+            file.close(cb);
+        });
+    });
+}
+
+function checkModel() {
+    if(fs.existsSync('finalized_model.sav')){
+        console.log("The edge device found a model.")
+    }
+    else{
+        console.log("Model not found. I'm downloading...")
+        download('http://192.168.1.39:3000/download', 'finalized_model.sav')
+    }
+}
 
 function model(hr, respbpm, spo2, bodytemp) {
     let outcome
@@ -53,6 +74,7 @@ function slightlyChange(num, decimal) {
     }
 }
 
+checkModel()
 let startingtemp = getRandomNumber(36.3, 37.1, true);
 let startinghr = getRandomNumber(60, 121);
 let startingrespbpm = getRandomNumber(12, 17);

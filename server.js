@@ -24,6 +24,10 @@ app.post("/temperature", (req, res, next) => {
     var oxygensat = req.body.oxygensat;
     var timestamp = req.body.timestamp;
 
+    if(temperature==null && heartrate==null && resprate==null && oxygensat==null){
+        console.log('A problem occurred achieving data from sensors.')
+    }
+
     let values = [temperature, heartrate, resprate, oxygensat, timestamp]
 
     async function pushInDb() {
