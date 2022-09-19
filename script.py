@@ -1,5 +1,4 @@
 import sys
-import joblib
 import pandas as pd
 import numpy as np
 import sklearn
@@ -9,7 +8,7 @@ import pickle
 def main():
     # Take data from the arguments
     data = [sys.argv[1:]]
-    filename = '/Users/micheletamborrino/WebstormProjects/iotdash/finalized_model.sav'
+    filename = '/Users/samueleancora/WebstormProjects/iot_course/finalized_model.sav'
     # Load the model with that filename
     model = pickle.load(open(filename, 'rb'))
     # print(data)

@@ -1,5 +1,5 @@
 {
-  "name": "iotdash",
+  "name": "iot_course",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,7 +13,10 @@
     "chart.js": "^3.9.1",
     "child_process": "^1.0.2",
     "express": "^4.18.1",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
     "mongodb": "^4.9.1",
+    "path": "^0.12.7",
     "python-bridge": "^1.1.0",
     "ws": "^8.8.1"
   }

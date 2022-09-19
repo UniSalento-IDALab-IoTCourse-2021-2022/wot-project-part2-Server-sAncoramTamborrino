@@ -24,10 +24,6 @@ app.post("/temperature", (req, res, next) => {
     var oxygensat = req.body.oxygensat;
     var timestamp = req.body.timestamp;
 
-    if(temperature==null && heartrate==null && resprate==null && oxygensat==null){
-        console.log('A problem occurred achieving data from sensors.')
-    }
-
     let values = [temperature, heartrate, resprate, oxygensat, timestamp]
 
     async function pushInDb() {
@@ -66,7 +62,7 @@ app.post("/temperature", (req, res, next) => {
     res.sendStatus(200)
 });
 app.get('/download', function(req, res){
-    const file = `${__dirname}/iot_model.joblib`;
+    const file = `${__dirname}/finalized_model.sav`;
     res.download(file); // Set disposition and send it.
 });
 
