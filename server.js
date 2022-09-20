@@ -16,15 +16,16 @@ app.use(
 
 app.use(express.json());
 app.post("/temperature", (req, res, next) => {
-    console.log('Achieved '+req.body.temperature+'°C of body temperature.');
+    console.log('Achieved '+req.body.temperature+'°C of body temperature with prediction ' +req.body.model_prediction);
     var sensor = req.body.sensor;
     var temperature = req.body.temperature;
     var heartrate = req.body.heartrate;
     var resprate = req.body.resprate;
     var oxygensat = req.body.oxygensat;
     var timestamp = req.body.timestamp;
+    var prediction = req.body.model_prediction;
 
-    let values = [temperature, heartrate, resprate, oxygensat, timestamp]
+    let values = [temperature, heartrate, resprate, oxygensat, timestamp, prediction]
 
     async function pushInDb() {
         const client = new MongoClient(uri, {useUnifiedTopology: true});
@@ -41,7 +42,8 @@ app.post("/temperature", (req, res, next) => {
                 heart_rate: heartrate,
                 respiration_rate: resprate,
                 oxygen_saturation: oxygensat,
-                timestamp: timestamp
+                timestamp: timestamp,
+                prediction: prediction
             };
 
             const result = await temperatureColl.insertOne(doc);

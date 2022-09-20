@@ -1,5 +1,6 @@
 const http = require('http')
-const {spawn} = require('child_process');
+const {spawnSync} = require('child_process');
+const execSync = require("child_process").execSync;
 var fs = require('fs');
 
 function download(url, dest, cb) {
@@ -23,20 +24,13 @@ function checkModel() {
 }
 
 function model(hr, respbpm, spo2, bodytemp) {
-    let outcome
     // Launch a script with Python as interpreter, and send to output what it prints
-    const python = spawn('python3', ['../../../script.py', hr, respbpm, spo2, bodytemp]);
-    python.stdout.on("data", function (data) {
-        console.log("data from script");
-        console.log(data.toString())
-        outcome = data.toString()
-    })
-
-    // Return exit code of the script
-    python.on("close", (code) => {
-        console.log(`child process closed stdio with code ${code}`)
-    })
-    return outcome
+    const python = spawnSync('python3', ['../../../script.py', hr, respbpm, spo2, bodytemp]);
+    if (python.status!==0) {
+        console.log(Error(python.stderr))
+        process.exitCode = 1;
+    }
+    return python.output[1].toString().slice(1,2)
 }
 
 //We use this function to round the generated values using a given precision
@@ -93,6 +87,7 @@ setInterval( function () {
     console.log('Oxygen saturation: ' + spo2 + '%');
     // Send data to model
     let prediction = model(hr, respbpm, spo2, bodytemp)
+    console.log(prediction)
 
     const data = JSON.stringify({
         'sensor': 'Mario Rossi',
@@ -134,4 +129,4 @@ setInterval( function () {
     //send the request
     req.write(data);
     req.end();
-}, 2000);
+}, 3000);
