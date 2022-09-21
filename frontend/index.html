@@ -44,19 +44,19 @@
 
         function updateAllCharts(values) {
             // Chart 1
-            addData(chart1,values[4],values[1]);
+            addData(chart1,values[4].slice(10),values[1]);
             removeData(chart1);
 
             // Chart 2
-            addData(chart2,values[4],values[0]);
+            addData(chart2,values[4].slice(10),values[0]);
             removeData(chart2);
 
             // Chart 3
-            addData(chart3,values[4],values[2]);
+            addData(chart3,values[4].slice(10),values[2]);
             removeData(chart3);
 
             // Chart 4
-            addData(chart4,values[4],values[3]);
+            addData(chart4,values[4].slice(10),values[3]);
             removeData(chart4);
         }
 
