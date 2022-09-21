@@ -78,7 +78,16 @@ let startingrespbpm = getRandomNumber(12, 17);
 let startingspo2 = getRandomNumber(97, 100);
 //Read values to send every 2 sec
 setInterval( function () {
-    const date = new Date();
+    const d_t = new Date();
+    let year = d_t.getFullYear();
+    let month = ("0" + (d_t.getMonth() + 1)).slice(-2);
+    let day = ("0" + d_t.getDate()).slice(-2);
+    let hour = d_t.getHours();
+    let minute = d_t.getMinutes();
+    let seconds = d_t.getSeconds();
+    const date = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + seconds
+    console.log(date);
+
     let bodytemp = slightlyChange(startingtemp, true);
     let hr = slightlyChange(startinghr);
     let respbpm = slightlyChange(startingrespbpm);
