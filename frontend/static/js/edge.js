@@ -30,7 +30,9 @@ function model(hr, respbpm, spo2, bodytemp) {
         console.log(Error(python.stderr))
         process.exitCode = 1;
     }
-    return python.output[1].toString().slice(1,2)
+    if (python.output[1].toString().slice(1,2)==='1')
+        return 'Abnormal'
+    return 'Normal'
 }
 
 //We use this function to round the generated values using a given precision
