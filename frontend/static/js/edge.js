@@ -1,6 +1,5 @@
 const http = require('http')
 const {spawnSync} = require('child_process');
-const execSync = require("child_process").execSync;
 var fs = require('fs');
 
 function download(url, dest, cb) {
@@ -25,7 +24,7 @@ function checkModel() {
 
 function model(hr, respbpm, spo2, bodytemp) {
     // Launch a script with Python as interpreter, and send to output what it prints
-    const python = spawnSync('python3', ['../../../script.py', hr, respbpm, spo2, bodytemp]);
+    const python = spawnSync('python3', ['../../../script.py', bodytemp, hr, respbpm, spo2]);
     if (python.status!==0) {
         console.log(Error(python.stderr))
         process.exitCode = 1;
