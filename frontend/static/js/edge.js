@@ -1,6 +1,7 @@
 const http = require('http')
 const {spawnSync} = require('child_process');
 var fs = require('fs');
+var keypress = require('keypress');
 
 function download(url, dest, cb) {
     var file = fs.createWriteStream(dest);
@@ -72,9 +73,10 @@ function slightlyChange(num, decimal) {
 
 checkModel()
 let startingtemp = getRandomNumber(36.3, 37.1, true);
-let startinghr = getRandomNumber(60, 121);
-let startingrespbpm = getRandomNumber(12, 17);
-let startingspo2 = getRandomNumber(97, 100);
+let startinghr = getRandomNumber(60, 80);
+let startingrespbpm = getRandomNumber(12, 16);
+let startingspo2 = getRandomNumber(97, 99);
+let stressing = false
 //Read values to send every 2 sec
 setInterval( function () {
     const d_t = new Date();
@@ -86,11 +88,35 @@ setInterval( function () {
     let seconds = d_t.getSeconds();
     const date = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + seconds
     console.log(date);
-
     let bodytemp = slightlyChange(startingtemp, true);
     let hr = slightlyChange(startinghr);
     let respbpm = slightlyChange(startingrespbpm);
     let spo2 = startingspo2;
+
+    if(stressing){
+        if(hr < 150){
+            startinghr+=4;
+            if(startinghr > 100){
+                respbpm = 15
+            }
+            if(startinghr > 110){
+                respbpm = 16
+            }
+            if(startinghr > 120){
+                respbpm = 17
+            }
+            if(startinghr > 130){
+                respbpm = 18
+            }
+            if(startinghr > 140){
+                respbpm = 19
+            }
+            if(startinghr > 150){
+                respbpm = 20
+            }
+        }
+    }
+
     console.log('Body temperature: ' + bodytemp + '°C')
     console.log('Heart rate: ' + hr + ' BPM');
     console.log('Respiratory rate: ' + respbpm + ' BPM')
@@ -98,6 +124,19 @@ setInterval( function () {
     // Send data to model
     let prediction = model(hr, respbpm, spo2, bodytemp)
     console.log(prediction)
+    console.log(stressing)
+
+    keypress(process.stdin);
+
+    process.stdin.on('keypress', function (ch, key) {
+        if (key.name === 'c') {
+            stressing = true
+            process.stdin.pause();
+        }
+    });
+
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
 
     const data = JSON.stringify({
         'sensor': 'Mario Rossi',
