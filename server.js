@@ -23,9 +23,11 @@ app.post("/temperature", (req, res, next) => {
     var resprate = req.body.resprate;
     var oxygensat = req.body.oxygensat;
     var timestamp = req.body.timestamp;
+    var cartemp = req.body.cartemp;
+    var co2 = req.body.co2;
     var prediction = req.body.model_prediction;
 
-    let values = [temperature, heartrate, resprate, oxygensat, timestamp, prediction]
+    let values = [temperature, heartrate, resprate, oxygensat, timestamp, cartemp, co2, prediction]
 
     async function pushInDb() {
         const client = new MongoClient(uri, {useUnifiedTopology: true});
@@ -43,6 +45,8 @@ app.post("/temperature", (req, res, next) => {
                 respiration_rate: resprate,
                 oxygen_saturation: oxygensat,
                 timestamp: timestamp,
+                cockpit_temperature: cartemp,
+                cockpit_co2: co2,
                 prediction: prediction
             };
 
