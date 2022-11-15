@@ -5,7 +5,7 @@ AN EDGE COMPUTING SOLUTION FOR DRIVER'S SAFETY
 
 The aim of the project is to guarantee and monitor driver's life signals as well as inspect the environment inside the vehicle and manage it. To do so, the Edge Computing paradigm has been chosen to satisfy requirements in speed of elaboration and low delay. The system is composed of three main components: the edge, the server and the frontend.
 
-The first component consists of a Raspeberry Pi 4 and the sensors. Its repository can be found at this address:https://github.com/UniSalento-IDALab-IoTCourse-2021-2022/wot-project-part1-EdgeDevice-sAncoramTamborrino/blob/master/README.md
+The first component consists of a Raspeberry Pi 4 and the sensors. Its repository can be found at this address:https://github.com/UniSalento-IDALab-IoTCourse-2021-2022/wot-project-part1-EdgeDevice-sAncoramTamborrino
 
 The second component consists of the server, which is in charge to use machine learning to create a model based on data sent by the edge and to store them in a NoSQL database, MongoDB. In this repository it can be found the respective code.
 
