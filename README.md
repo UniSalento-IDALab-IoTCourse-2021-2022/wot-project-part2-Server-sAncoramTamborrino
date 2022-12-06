@@ -15,3 +15,8 @@ To give a better understanding of the architecture of the system, the following 
 
 
 ![iotarch](https://user-images.githubusercontent.com/106089600/202003221-f3a556e3-e22e-4b43-8f91-3e7255d2c3a8.png)
+
+The purpose of this component is to collet data coming from the edge and store them in MongoDB. Moreover, when the newer version of the model it is requested by the edge, the server will send the updated copy to it.
+
+To make the system work in the proper way in locale all the components must be in the same working directory with the following structure.
+<img width="325" alt="Schermata 2022-10-25 alle 20 10 26" src="https://user-images.githubusercontent.com/106089600/205872210-a101832e-da61-409f-aff4-4272cc91ea53.png">
